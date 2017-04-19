@@ -2,12 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(MouseTracking))]
-[RequireComponent(typeof(MouseHandler))]
-public class CharacterMovement : MonoBehaviour {
+[RequireComponent(typeof(CreatureTracking))]
+public class CreatureMovement : MonoBehaviour {
 
-	private MouseTracking mouseTracking;
-	private MouseHandler mouseHandler;
+	private CreatureTracking creatureTracking;
 
 	public Vector3 targetPosition;
 
@@ -29,21 +27,17 @@ public class CharacterMovement : MonoBehaviour {
 
 	void Start () 
 	{
-		mouseTracking = GetComponent<MouseTracking>();
-		mouseHandler = GetComponent<MouseHandler>();
+		creatureTracking = GetComponent<CreatureTracking>();
 
 		animator = GetComponent<Animator> ();
 		controller = GetComponent<CharacterController> ();
 
 		targetPosition = transform.position;
 	}
-	
+
 	void Update () 
 	{
-		if (Input.GetButtonDown ("Fire2"))
-		{
-			targetPosition = mouseTracking.HitPosition;
-		}
+		targetPosition = creatureTracking.TargetPosition;
 
 		HandleMovementAndRotation ();
 	}
@@ -68,7 +62,6 @@ public class CharacterMovement : MonoBehaviour {
 
 		float targetSpeed = inputDirection.magnitude * walkSpeed;
 		currentSpeed = Mathf.SmoothDamp (currentSpeed, targetSpeed, ref speedSmoothVelocity, speedSmoothTime);
-		//transform.Translate (transform.forward * currentSpeed * Time.deltaTime, Space.World);
 
 		yVelocity += Time.deltaTime * gravity;
 		Vector3 velocity = transform.forward * currentSpeed + Vector3.up * yVelocity;

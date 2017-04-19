@@ -13,6 +13,10 @@ public class FollowPlayer : MonoBehaviour {
 	private Vector3 desiredPosition;
 	private float curDistance;
 
+	public float minZoomScale = .5f;
+	public float zoomScale = 1;
+	public float maxZoomScale = 1.5f;
+
 	void Start()
 	{
 		desiredOffset = transform.position - target.position;
@@ -20,12 +24,24 @@ public class FollowPlayer : MonoBehaviour {
 
 	void Update () 
 	{
+
+		if (Input.GetAxis ("Mouse ScrollWheel") > .1)
+		{
+			zoomScale -= .1f;
+		}
+		else 	if (Input.GetAxis ("Mouse ScrollWheel") <  -.1)
+		{
+			zoomScale += .1f;
+		}
+
+		zoomScale = Mathf.Clamp (zoomScale, minZoomScale, maxZoomScale);
+
 		currentOffset = transform.position -  target.position;
 
-		curDistance = Vector3.Distance (currentOffset, desiredOffset);
+		curDistance = Vector3.Distance (currentOffset, desiredOffset * zoomScale);
 		if (curDistance > allowedVariance)
 		{
-			desiredPosition = target.position + desiredOffset;
+			desiredPosition = target.position +  desiredOffset * zoomScale;
 			transform.position = Vector3.MoveTowards (transform.position, desiredPosition, returnFactor * Time.deltaTime * curDistance);
 		}
 	}
