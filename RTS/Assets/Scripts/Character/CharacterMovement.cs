@@ -40,9 +40,18 @@ public class CharacterMovement : MonoBehaviour {
 	
 	void Update () 
 	{
-		if (Input.GetButtonDown ("Fire2"))
+		if (Input.GetButton("Fire2"))
 		{
 			targetPosition = mouseTracking.HitPosition;
+		}
+
+		if (Input.GetButton("Fire1"))
+		{
+			// stop the players movement
+			targetPosition = transform.position;
+
+			// rotate them toward the mouse position
+			FaceTowardsPoint(mouseTracking.HitPosition);
 		}
 
 		HandleMovementAndRotation ();
@@ -81,7 +90,13 @@ public class CharacterMovement : MonoBehaviour {
 
 		float animationSpeedPercent = inputDirection.magnitude;
 		animator.SetFloat ("SpeedPercent", animationSpeedPercent, speedSmoothTime, Time.deltaTime);
+	}
 
-
+	void FaceTowardsPoint(Vector3 worldTargetPosition)
+	{
+		Vector2 input = new Vector2 (worldTargetPosition.x - transform.position.x, worldTargetPosition.z - transform.position.z);
+		Vector2 inputDirection = input.normalized;
+		float targetRotation = Mathf.Atan2 (inputDirection.x, inputDirection.y) * Mathf.Rad2Deg;
+		transform.eulerAngles = Vector3.up * Mathf.SmoothDampAngle (transform.eulerAngles.y, targetRotation, ref turnSmoothVelocity, turnSmoothTime);
 	}
 }
